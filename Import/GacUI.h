@@ -975,23 +975,26 @@ ITEM(LEFT_BRACKET,        0xDD)		/* OEM_6 */									\
 ITEM(APOSTROPHE,          0xDE)		/* OEM_7 */									\
 
 #define GUI_DEFINE_KEYBOARD_CODE_ENUM_ITEM(NAME, CODE) _##NAME = CODE,
-		enum class VKEY
+		enum class VKEY : vint
 		{
 			_UNKNOWN = -1,
 			GUI_DEFINE_KEYBOARD_CODE(GUI_DEFINE_KEYBOARD_CODE_ENUM_ITEM)
 		};
 #undef GUI_DEFINE_KEYBOARD_CODE_ENUM_ITEM
-		static bool operator == (VKEY a, VKEY b) { return (vint)a == (vint)b; }
-		static bool operator != (VKEY a, VKEY b) { return (vint)a != (vint)b; }
-		static bool operator <  (VKEY a, VKEY b) { return (vint)a <  (vint)b; }
-		static bool operator <= (VKEY a, VKEY b) { return (vint)a <= (vint)b; }
-		static bool operator >  (VKEY a, VKEY b) { return (vint)a >  (vint)b; }
-		static bool operator >= (VKEY a, VKEY b) { return (vint)a >= (vint)b; }
-		static VKEY operator &  (VKEY a, VKEY b) { return (VKEY)((vint)a & (vint)b); }
-		static VKEY operator |  (VKEY a, VKEY b) { return (VKEY)((vint)a | (vint)b); }
+        // https://en.wikipedia.org/wiki/Argument-dependent_name_lookup
+        vl::presentation::VKEY operator&(vl::presentation::VKEY a, vl::presentation::VKEY b) { return (vl::presentation::VKEY)((vl::vint)a & (vl::vint)b); }
+        vl::presentation::VKEY operator|(vl::presentation::VKEY a, vl::presentation::VKEY b) { return (vl::presentation::VKEY)((vl::vint)a | (vl::vint)b); }
 
 	}
 }
+
+static bool operator == (vl::presentation::VKEY a, vl::presentation::VKEY b) { return static_cast<vl::vint>(a) == static_cast<vl::vint>(b); }
+static bool operator != (vl::presentation::VKEY a, vl::presentation::VKEY b) { return (vl::vint)a != (vl::vint)b; }
+static bool operator <  (vl::presentation::VKEY a, vl::presentation::VKEY b) { return (vl::vint)a <  (vl::vint)b; }
+static bool operator <= (vl::presentation::VKEY a, vl::presentation::VKEY b) { return (vl::vint)a <= (vl::vint)b; }
+static bool operator >  (vl::presentation::VKEY a, vl::presentation::VKEY b) { return (vl::vint)a >  (vl::vint)b; }
+static bool operator >= (vl::presentation::VKEY a, vl::presentation::VKEY b) { return (vl::vint)a >= (vl::vint)b; }
+
 
 #endif
 

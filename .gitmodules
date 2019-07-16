@@ -1,0 +1,3 @@
+[submodule "win_toolchain"]
+	path = win_toolchain
+	url = git@github.com:mojove/win_toolchain.git

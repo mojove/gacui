@@ -7932,6 +7932,39 @@ void RendererMainGDI()
 
 #pragma comment(lib, "Shcore.lib")
 
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+
+#define _DPI_AWARENESS_CONTEXTS_
+
+DECLARE_HANDLE(DPI_AWARENESS_CONTEXT);
+
+typedef enum DPI_AWARENESS {
+    DPI_AWARENESS_INVALID           = -1,
+    DPI_AWARENESS_UNAWARE           = 0,
+    DPI_AWARENESS_SYSTEM_AWARE      = 1,
+    DPI_AWARENESS_PER_MONITOR_AWARE = 2
+} DPI_AWARENESS;
+
+#define DPI_AWARENESS_CONTEXT_UNAWARE              ((DPI_AWARENESS_CONTEXT)-1)
+#define DPI_AWARENESS_CONTEXT_SYSTEM_AWARE         ((DPI_AWARENESS_CONTEXT)-2)
+#define DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE    ((DPI_AWARENESS_CONTEXT)-3)
+#define DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 ((DPI_AWARENESS_CONTEXT)-4)
+
+typedef enum PROCESS_DPI_AWARENESS {
+  PROCESS_DPI_UNAWARE,
+  PROCESS_SYSTEM_DPI_AWARE,
+  PROCESS_PER_MONITOR_DPI_AWARE
+} ;
+
+typedef enum MONITOR_DPI_TYPE {
+  MDT_EFFECTIVE_DPI,
+  MDT_ANGULAR_DPI,
+  MDT_RAW_DPI,
+  MDT_DEFAULT
+} ;
+
+#endif
+
 namespace vl
 {
 	namespace presentation
@@ -7942,23 +7975,25 @@ namespace vl
 			{
 				{
 					HMODULE moduleHandle = LoadLibrary(L"user32");
-					bool available = GetProcAddress(moduleHandle, "SetProcessDpiAwarenessContext") != NULL;
-					FreeLibrary(moduleHandle);
-					if (available)
-					{
+                    using SetProcessDpiAwarenessContextFunc = BOOL(*)(DPI_AWARENESS_CONTEXT);
+                    auto SetProcessDpiAwarenessContext = reinterpret_cast<SetProcessDpiAwarenessContextFunc>(GetProcAddress(moduleHandle, "SetProcessDpiAwarenessContext"));
+					if (SetProcessDpiAwarenessContext != nullptr) {
 						SetProcessDpiAwarenessContext(dpiAware ? DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2:  DPI_AWARENESS_CONTEXT_UNAWARE);
+                        FreeLibrary(moduleHandle);
 						return;
 					}
+                    FreeLibrary(moduleHandle);
 				}
 				{
 					HMODULE moduleHandle = LoadLibrary(L"Shcore");
-					bool available = GetProcAddress(moduleHandle, "SetProcessDpiAwareness") != NULL;
-					FreeLibrary(moduleHandle);
-					if (available)
-					{
+                    using SetProcessDpiAwarenessFunc = HRESULT(*)(PROCESS_DPI_AWARENESS);
+                    auto SetProcessDpiAwareness = reinterpret_cast<SetProcessDpiAwarenessFunc>(GetProcAddress(moduleHandle, "SetProcessDpiAwareness"));	
+					if (SetProcessDpiAwareness != nullptr) {
 						SetProcessDpiAwareness(dpiAware ? PROCESS_PER_MONITOR_DPI_AWARE : PROCESS_DPI_UNAWARE);
+                        FreeLibrary(moduleHandle);
 						return;
 					}
+                    FreeLibrary(moduleHandle);
 				}
 			}
 
@@ -7980,11 +8015,15 @@ namespace vl
 					*y = 96;
 				}
 
-				if (GetDpiForMonitor(monitor, MDT_DEFAULT, x, y) != S_OK)
+                auto handler = LoadLibrary(L"Shcore");
+                using GetDpiForMonitorFunc = HRESULT (*)(HMONITOR, MONITOR_DPI_TYPE, UINT*, UINT*);
+                auto GetDpiForMonitor = reinterpret_cast<GetDpiForMonitorFunc>(GetProcAddress(handler, "GetDpiForMonitor"));
+				if (GetDpiForMonitor && GetDpiForMonitor(monitor, MDT_DEFAULT, x, y) != S_OK)
 				{
 					*x = 96;
 					*y = 96;
 				}
+                FreeLibrary(handler);
 			}
 
 			void DpiAwared_GetDpiForWindow(HWND handle, UINT* x, UINT* y)
@@ -8001,7 +8040,11 @@ namespace vl
 
 				if (available_GetDpiForWindow)
 				{
+                     auto handler = LoadLibrary(L"user32");
+                    using GetDpiForWindowFunc = UINT (*)(HWND);
+                    auto GetDpiForWindow = reinterpret_cast<GetDpiForWindowFunc>(GetProcAddress(handler, "GetDpiForWindow"));
 					*x = *y = GetDpiForWindow(handle);
+                    FreeLibrary(handler);
 				}
 				else
 				{
@@ -8031,7 +8074,11 @@ namespace vl
 
 				if (available_AdjustWindowRectExForDpi)
 				{
+                    using AdjustWindowRectExForDpiFunc = BOOL (*)(LPRECT, DWORD, BOOL, DWORD, UINT);
+                    HMODULE moduleHandle = LoadLibrary(L"user32");
+                    auto AdjustWindowRectExForDpi = reinterpret_cast<AdjustWindowRectExForDpiFunc>(GetProcAddress(moduleHandle, "AdjustWindowRectExForDpi"));
 					AdjustWindowRectExForDpi(rect, (DWORD)GetWindowLongPtr(handle, GWL_STYLE), FALSE, (DWORD)GetWindowLongPtr(handle, GWL_EXSTYLE), dpi);
+                    FreeLibrary(moduleHandle);
 				}
 				else
 				{
@@ -8053,7 +8100,12 @@ namespace vl
 
 				if (available_GetSystemMetricsForDpi)
 				{
-					return GetSystemMetricsForDpi(index, dpi);
+                    using GetSystemMetricsForDpiFunc = int(*)(int, UINT);
+                    HMODULE moduleHandle = LoadLibrary(L"user32");
+                    auto GetSystemMetricsForDpi = reinterpret_cast<GetSystemMetricsForDpiFunc>(GetProcAddress(moduleHandle, "GetSystemMetricsForDpi"));
+					auto result = GetSystemMetricsForDpi(index, dpi);
+                    FreeLibrary(moduleHandle);
+                    return result;
 				}
 				else
 				{
@@ -8072,6 +8124,8 @@ namespace vl
 #pragma comment(lib, "Imm32.lib")
 #pragma comment(lib, "Shlwapi.lib")
 #pragma comment(lib, "Comctl32.lib")
+
+#define WM_DPICHANGED       0x02E0
 
 namespace vl
 {
@@ -8260,11 +8314,12 @@ WindowsForm
 					}
 					else
 					{
-						info.ctrl=((VKEY)wParam & VKEY::_CONTROL)!=(VKEY)0;
-						info.shift=((VKEY)wParam & VKEY::_SHIFT)!= (VKEY)0;
-						info.left=((VKEY)wParam & VKEY::_LBUTTON)!= (VKEY)0;
-						info.middle=((VKEY)wParam & VKEY::_MBUTTON)!= (VKEY)0;
-						info.right=((VKEY)wParam & VKEY::_RBUTTON)!= (VKEY)0;
+                        VKEY param = (VKEY)wParam;
+						info.ctrl=(param & VKEY::_CONTROL)!=(VKEY)0;
+						info.shift=(param & VKEY::_SHIFT)!= (VKEY)0;
+						info.left=(param & VKEY::_LBUTTON)!= (VKEY)0;
+						info.middle=(param & VKEY::_MBUTTON)!= (VKEY)0;
+						info.right=(param & VKEY::_RBUTTON)!= (VKEY)0;
 
 						POINTS point = MAKEPOINTS(lParam);
 
