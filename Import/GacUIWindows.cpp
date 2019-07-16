@@ -8,6 +8,11 @@ DEVELOPER: Zihan Chen(vczh)
 .\GRAPHICSELEMENT\WINDOWSDIRECT2D\GUIGRAPHICSLAYOUTPROVIDERWINDOWSDIRECT2D.CPP
 ***********************************************************************/
 
+#pragma comment(lib, "d2d1.lib")
+#pragma comment(lib, "dxguid.lib")
+#pragma comment(lib, "dwrite.lib")
+#pragma comment(lib, "d3d11.lib")
+
 namespace vl
 {
 	namespace presentation
@@ -3312,7 +3317,7 @@ WindowsDirect2DRenderTarget
 									if (d2dEffectBitmap)
 									{
 										ID2D1Effect* d2dEffect = nullptr;
-										hr = d2dDeviceContext->CreateEffect(CLSID_D2D1Tile, &d2dEffect);
+										hr = d2dDeviceContext->CreateEffect(CLSID_D2D1Tiles, &d2dEffect);
 										if (d2dEffect)
 										{
 											d2dEffect->SetInput(0, d2dEffectBitmap);
@@ -7930,8 +7935,6 @@ void RendererMainGDI()
 .\NATIVEWINDOW\WINDOWS\WINNATIVEDPIAWARENESS.CPP
 ***********************************************************************/
 
-#pragma comment(lib, "Shcore.lib")
-
 #if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 
 #define _DPI_AWARENESS_CONTEXTS_
@@ -7975,7 +7978,7 @@ namespace vl
 			{
 				{
 					HMODULE moduleHandle = LoadLibrary(L"user32");
-                    using SetProcessDpiAwarenessContextFunc = BOOL(*)(DPI_AWARENESS_CONTEXT);
+                    using SetProcessDpiAwarenessContextFunc = BOOL(WINAPI *)(DPI_AWARENESS_CONTEXT);
                     auto SetProcessDpiAwarenessContext = reinterpret_cast<SetProcessDpiAwarenessContextFunc>(GetProcAddress(moduleHandle, "SetProcessDpiAwarenessContext"));
 					if (SetProcessDpiAwarenessContext != nullptr) {
 						SetProcessDpiAwarenessContext(dpiAware ? DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2:  DPI_AWARENESS_CONTEXT_UNAWARE);
@@ -7986,7 +7989,7 @@ namespace vl
 				}
 				{
 					HMODULE moduleHandle = LoadLibrary(L"Shcore");
-                    using SetProcessDpiAwarenessFunc = HRESULT(*)(PROCESS_DPI_AWARENESS);
+                    using SetProcessDpiAwarenessFunc = HRESULT(WINAPI *)(PROCESS_DPI_AWARENESS);
                     auto SetProcessDpiAwareness = reinterpret_cast<SetProcessDpiAwarenessFunc>(GetProcAddress(moduleHandle, "SetProcessDpiAwareness"));	
 					if (SetProcessDpiAwareness != nullptr) {
 						SetProcessDpiAwareness(dpiAware ? PROCESS_PER_MONITOR_DPI_AWARE : PROCESS_DPI_UNAWARE);
@@ -8016,7 +8019,7 @@ namespace vl
 				}
 
                 auto handler = LoadLibrary(L"Shcore");
-                using GetDpiForMonitorFunc = HRESULT (*)(HMONITOR, MONITOR_DPI_TYPE, UINT*, UINT*);
+                using GetDpiForMonitorFunc = HRESULT (WINAPI*)(HMONITOR, MONITOR_DPI_TYPE, UINT*, UINT*);
                 auto GetDpiForMonitor = reinterpret_cast<GetDpiForMonitorFunc>(GetProcAddress(handler, "GetDpiForMonitor"));
 				if (GetDpiForMonitor && GetDpiForMonitor(monitor, MDT_DEFAULT, x, y) != S_OK)
 				{
@@ -8041,7 +8044,7 @@ namespace vl
 				if (available_GetDpiForWindow)
 				{
                      auto handler = LoadLibrary(L"user32");
-                    using GetDpiForWindowFunc = UINT (*)(HWND);
+                    using GetDpiForWindowFunc = UINT (WINAPI*)(HWND);
                     auto GetDpiForWindow = reinterpret_cast<GetDpiForWindowFunc>(GetProcAddress(handler, "GetDpiForWindow"));
 					*x = *y = GetDpiForWindow(handle);
                     FreeLibrary(handler);
@@ -8074,7 +8077,7 @@ namespace vl
 
 				if (available_AdjustWindowRectExForDpi)
 				{
-                    using AdjustWindowRectExForDpiFunc = BOOL (*)(LPRECT, DWORD, BOOL, DWORD, UINT);
+                    using AdjustWindowRectExForDpiFunc = BOOL (WINAPI*)(LPRECT, DWORD, BOOL, DWORD, UINT);
                     HMODULE moduleHandle = LoadLibrary(L"user32");
                     auto AdjustWindowRectExForDpi = reinterpret_cast<AdjustWindowRectExForDpiFunc>(GetProcAddress(moduleHandle, "AdjustWindowRectExForDpi"));
 					AdjustWindowRectExForDpi(rect, (DWORD)GetWindowLongPtr(handle, GWL_STYLE), FALSE, (DWORD)GetWindowLongPtr(handle, GWL_EXSTYLE), dpi);
@@ -8100,7 +8103,7 @@ namespace vl
 
 				if (available_GetSystemMetricsForDpi)
 				{
-                    using GetSystemMetricsForDpiFunc = int(*)(int, UINT);
+                    using GetSystemMetricsForDpiFunc = int(WINAPI*)(int, UINT);
                     HMODULE moduleHandle = LoadLibrary(L"user32");
                     auto GetSystemMetricsForDpi = reinterpret_cast<GetSystemMetricsForDpiFunc>(GetProcAddress(moduleHandle, "GetSystemMetricsForDpi"));
 					auto result = GetSystemMetricsForDpi(index, dpi);
@@ -10049,11 +10052,6 @@ Windows Platform Native Controller
 /***********************************************************************
 .\NATIVEWINDOW\WINDOWS\DIRECT2D\WINDIRECT2DAPPLICATION.CPP
 ***********************************************************************/
-
-#pragma comment(lib, "d2d1.lib")
-#pragma comment(lib, "dxguid.lib")
-#pragma comment(lib, "dwrite.lib")
-#pragma comment(lib, "d3d11.lib")
 
 namespace vl
 {

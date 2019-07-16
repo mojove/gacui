@@ -20,10 +20,15 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSWINDOWSDIRECT2D
 #define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSWINDOWSDIRECT2D
 
+
 #include <d2d1_1.h>
 #include <dwrite_1.h>
+#include <InitGuid.h>
 #include <d2d1effects.h>
 #include <wincodec.h>
+
+// LNK2001 CLSID_D2D1Tile
+DEFINE_GUID(CLSID_D2D1Tiles, 0xB0784138, 0x3B76, 0x4bc5, 0xB1, 0x3B, 0x0F, 0xA2, 0xAD, 0x02, 0x65, 0x9F);
 
 namespace vl
 {
