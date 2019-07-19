@@ -86,6 +86,57 @@ GacGen.exe可以将xml编译成一个二进制的资源文件，还有一系列C
 
 ## 二、排版
 
+### 1. GuiGraphicsComposition
+
+GacUI的图形都是由Composition和Element组成的，Composition的基类为GuiGraphicsComposition。
+
+* MinSizeLimitation：控制当前composition如何被children影响的
+* Margin：子容器的外部padding
+* InternalMargin：子容器相对父容器的padding
+* PreferredMinSize：最小大小
+
+### 2. GuiBoundsComposition
+
+* AlignmentToParent：设置Composition的四个方向，margin的外边与parent的internalMargin的距离
+* Bounds：很鸡肋，设置float pos，但是与自动布局冲突时就失效了
+
+### 3. GuiSharedSize(Root|Item)Composition
+
+### 4. GuiStackComposition
+
+GuiStackComposition的属性如下：
+
+* Direction：生长的方向，从左到右、从右到左、从上到下、从下到上的生长方向
+* Padding：StackItem之间的间距，可以使用InternalMargin替换，或者设置Margin或AlignmentToParent来模拟
+* ExtraMargin：仅对StackItem起作用，类似于Stack的InternalMargin
+* IsStackItemClipped：是否有item因大小而不可见
+* EnsureVisible：所有item根据direction的要求进行滑动，使某一个item显示出来，例如很多的tab显示不全的时候，控制某一个tab页签展示
+
+GuiStackItemComposition的属性如下：
+* ExtraMargin：Stack告诉item位置，item据此属性变大一点，例如tab在MoveChild时可以变大，并且可以挡住旁边的两个页签展示在最上边
+
+### 5. GuiFlowComposition 
+
+Flow相对与Stack是二维对一维，生长方向有8个。
+
+* Axis：AxisDirection，生长方向
+* RowPadding：虚拟行的行距，根据Axis属性的Y轴方向的间距
+* ColumnPadding：虚拟行的列距
+* ExtraMargin：与Stack一致
+* Alignment：当一个虚拟行放不下item，但是还有空间时如何处理。左对齐、居中、扩展三种方法
+
+GuiFlowItemComposition与GuiFlowComposition配合使用，包含以下属性：
+* ExtraMargin：
+* FlowOption：计算基线的方法
+
+### 6. GuiTableComposition
+
+
+### 7. Document
+
+布局的更多细节和使用详情请参考[GacUI_Layout](https://github.com/vczh-libraries/Release/tree/master/Tutorial/GacUI_Layout).
+
+
 
 
 ## 三、界面库扩展
