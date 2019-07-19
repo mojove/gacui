@@ -6,10 +6,22 @@
       prop HasLoggedIn : bool = false {}
     ]]>
   </ref.Members>
-  <Window ref.Name="self" Text="Let's Sign Up!" ClientSize="x:320 y:320">
-    <att.BoundsComposition-set PreferredMinSize="x:320 y:320"/>
+  <Window ref.Name="self" Text="Let's Sign Up!" ClientSize="x:600 y:500">
+    <att.BoundsComposition-set PreferredMinSize="x:500 y:400"/>
     <att.ViewModel-set UserName-bind="textBoxUserName.Text" Password-bind="textBoxPassword.Text"/>
-    <Table CellPadding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+    <Label Text="Text Label">
+      <att.Font>fontFamily:"Segoe UI" size:32 antialias:true</att.Font>
+    </Label>
+    <Button ref.Name="buttonText" Text="Test Button" ev.Clicked="buttonText_Clicked">
+      <att.BoundsComposition-set AlignmentToParent="left:50 top:0 right:-1 bottom:480" PreferredMinSize="x:100 y:24"/>
+    </Button>
+    <ProgressBar ref.Name="progressText" >
+      <att.BoundsComposition-set AlignmentToParent="left:50 top:100 right:-1 bottom:480" PreferredMinSize="x:700 y:30"/>
+    </ProgressBar>
+    <HTracker ref.Name="htTrackerText" >
+      <att.BoundsComposition-set AlignmentToParent="left:50 top:200 right:-1 bottom:480" PreferredMinSize="x:700 y:30"/>
+    </HTracker>
+    <Table CellPadding="5" AlignmentToParent="left:10 top:10 right:10 bottom:10">
       <att.Rows>
         <CellOption>composeType:Absolute absolute:90</CellOption>
         <CellOption>composeType:MinSize</CellOption>

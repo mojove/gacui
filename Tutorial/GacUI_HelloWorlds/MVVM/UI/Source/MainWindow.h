@@ -33,13 +33,14 @@ namespace helloworld
 		friend class ::vl_workflow_global::__vwsnc3_HelloWorld_helloworld_MainWindowConstructor___vwsn_helloworld_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc4_HelloWorld_helloworld_MainWindowConstructor___vwsn_helloworld_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc5_HelloWorld_helloworld_MainWindowConstructor___vwsn_helloworld_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf1_HelloWorld_helloworld_MainWindowConstructor___vwsn_helloworld_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf2_HelloWorld_helloworld_MainWindowConstructor___vwsn_helloworld_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf3_HelloWorld_helloworld_MainWindowConstructor___vwsn_helloworld_MainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf5_HelloWorld_helloworld_MainWindowConstructor___vwsn_helloworld_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf4_HelloWorld_helloworld_MainWindowConstructor___vwsn_helloworld_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf6_HelloWorld_helloworld_MainWindowConstructor___vwsn_helloworld_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf7_HelloWorld_helloworld_MainWindowConstructor___vwsn_helloworld_MainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsno4_HelloWorld_helloworld_MainWindowConstructor___vwsn_helloworld_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf8_HelloWorld_helloworld_MainWindowConstructor___vwsn_helloworld_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsno1_HelloWorld_helloworld_MainWindowConstructor___vwsn_helloworld_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsno5_HelloWorld_helloworld_MainWindowConstructor___vwsn_helloworld_MainWindow_Initialize_;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MainWindow>;
 #endif
@@ -51,6 +52,7 @@ namespace helloworld
 		::vl::Ptr<::vm::IViewModel> __vwsn_parameter_ViewModel;
 		::vl::Ptr<::vm::IViewModel> GetViewModel();
 	protected:
+		void buttonText_Clicked(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments);
 		void buttonSignUp_Clicked(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments);
 	public:
 		MainWindow(::vl::Ptr<::vm::IViewModel> __vwsn_ctor_parameter_ViewModel);

@@ -57,6 +57,13 @@ namespace helloworld
 		return this->__vwsn_parameter_ViewModel;
 	}
 
+	void MainWindow::buttonText_Clicked(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments)
+	{/* USER_CONTENT_BEGIN(::helloworld::MainWindow) */
+        if (GetViewModel()) {
+
+        }
+	}/* USER_CONTENT_END() */
+
 	void MainWindow::buttonSignUp_Clicked(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments)
 	{/* USER_CONTENT_BEGIN(::helloworld::MainWindow) */
 		if (this->GetViewModel()->SignUp())
